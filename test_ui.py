@@ -76,10 +76,14 @@ wait_idle(wifi)
 check("second press turns Wi-Fi off", wifi.state is False)
 
 mesh = app.items[4]
-app.on_key(5 + 1)                   # key "5": MeshZero needs confirming
+if not mesh.state:                  # turning on needs no confirm
+    app.on_key(5 + 1)
+    wait_idle(mesh)
+app.on_key(5 + 1)                   # key "5": turning off needs confirming
+check("MeshZero off asks first", mesh.state is True and app.pending)
 app.on_key(5 + 1)
 wait_idle(mesh)
-check("MeshZero toggles after confirm", mesh.state is False)
+check("MeshZero turns off after confirm", mesh.state is False)
 
 app.on_key(7 + 1)                   # key "7": desktop extras, no confirm
 wait_idle(app.items[6], 3)
@@ -102,6 +106,23 @@ check("won't stop system processes", "system process" in app.msg[0])
 snap("procs")
 app.on_key(pd.K_TAB)
 check("Tab returns", app.screen == "main")
+
+# plain F Z X C work as arrows
+app.sel = 0
+app.on_key(pd.K_X)
+check("X moves down", app.sel == 1)
+app.on_key(pd.K_F)
+check("F moves up", app.sel == 0)
+b1 = bri.state
+app.on_key(pd.K_C)
+check(f"C turns brightness up ({b1} -> {bri.state})", bri.state > b1)
+app.on_key(pd.K_Z)
+check("Z turns it back down", bri.state == b1)
+app.sel = 5                         # Printing: C = on, Z = off
+p0 = app.items[5].state
+app.on_key(pd.K_Z if p0 else pd.K_C)
+wait_idle(app.items[5])
+check("Z/C switch a row off/on", app.items[5].state == (not p0))
 
 app.running = False
 for name, ok in results:

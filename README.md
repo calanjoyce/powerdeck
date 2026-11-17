@@ -42,12 +42,14 @@ the launcher, the audio system or other system parts.
 | Key | Action |
 | --- | --- |
 | `1`–`7` | jump to a switch and flip it |
-| `;` `.` or `Fn`+`F` / `Fn`+`X` | move up / down |
+| `F` / `X` (the ↑ ↓ printed on them, no `Fn` needed) | move up / down |
 | `Enter` / `Space` | flip the switch (brightness cycles 20/50/100%, CPU cycles modes) |
-| `,` `/` or `Fn`+`Z` / `Fn`+`C` | less / more (brightness, CPU), or off / on |
+| `Z` / `C` (← →) | less / more (brightness, CPU), or off / on |
 | `Tab` | processes ↔ switches |
 | `K` twice | stop the selected process |
 | `Esc` / `Q` | quit (processes screen: back) |
+
+`Fn` + `F`/`Z`/`X`/`C` and `;` `.` `,` `/` also work as arrows.
 
 ## Install
 

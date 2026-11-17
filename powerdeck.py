@@ -8,10 +8,13 @@ it, and a second screen listing the busiest processes.
 
 Changes last until the next restart.
 
-Keys (main):  Fn+F / Fn+X or ; .   move        1-7  jump to a row and toggle
-              Enter / Space        toggle      Fn+Z / Fn+C or , /  less / more
-              Tab                  processes   Esc, Q  quit
-Keys (procs): ; .  move   K twice  stop the selected process   Tab / Esc  back
+The arrow keys printed on F Z X C work without Fn (Fn+F/Z/X/C and ; . , /
+work too).
+
+Keys (main):  F / X   up / down             1-7  jump to a row and toggle
+              Z / C   less / more, off / on Enter / Space  toggle
+              Tab     processes             Esc, Q  quit
+Keys (procs): F / X  move   K twice  stop the selected process   Tab / Esc  back
 """
 import json
 import os
@@ -41,6 +44,10 @@ CPUFREQ = "/sys/devices/system/cpu/cpu0/cpufreq"
 K_ESC, K_TAB, K_ENTER, K_SPACE, K_Q, K_K = 1, 15, 28, 57, 16, 37
 K_UP, K_DOWN, K_LEFT, K_RIGHT = 103, 108, 105, 106
 K_SEMI, K_DOT, K_COMMA, K_SLASH = 39, 52, 51, 53
+K_F, K_Z, K_X, K_C = 33, 44, 45, 46
+# plain F Z X C (arrows printed on the keys) and ; . , / act as arrows
+ARROWS = {K_F: K_UP, K_X: K_DOWN, K_Z: K_LEFT, K_C: K_RIGHT,
+          K_SEMI: K_UP, K_DOT: K_DOWN, K_COMMA: K_LEFT, K_SLASH: K_RIGHT}
 K_DIGITS = {2 + i: i for i in range(9)}   # "1".."9" -> 0..8
 
 BG = (12, 14, 18)
@@ -563,6 +570,7 @@ class App:
         self.msg = (text, time.time() + secs)
 
     def on_key(self, code, repeat=False):
+        code = ARROWS.get(code, code)
         if self.screen == "procs":
             return self.on_key_procs(code, repeat)
         if repeat and code not in (K_LEFT, K_RIGHT, K_COMMA, K_SLASH,
@@ -693,7 +701,7 @@ class App:
                 # current is negative when discharging: +d = less drain
                 self.text(self.f_lbl, f"{-d:+.0f}mA", dcol, (W - 6, y + 3),
                           "topright")
-        self.draw_footer("1-7 toggle  ;. move  ,/ adjust  Tab procs  Esc")
+        self.draw_footer("F/X move  Z/C set  1-7 toggle  Tab procs  Esc")
 
     def draw_procs(self):
         self.draw_header("Processes")
@@ -720,7 +728,7 @@ class App:
             self.text(self.f_lbl, r["user"][:9], DIM, (256, y + 2))
         if not rows:
             self.text(self.f_sm, "measuring…", DIM, (W // 2, 90), "center")
-        self.draw_footer(";. move   K K stop   Tab back")
+        self.draw_footer("F/X move   K K stop   Tab back")
 
     def draw_hint(self, s, x0, x1, y):
         """Row description, shortened to fit between name and value."""
