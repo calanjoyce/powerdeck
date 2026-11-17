@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=PowerDeck
+Exec=/opt/powerdeck/powerdeck.py
+Terminal=false
+Icon=share/images/powerdeck.png
+Type=Application
